@@ -13,7 +13,6 @@ from airflow.utils.dates import days_ago
 from airflow.utils.task_group import TaskGroup
 
 
-## TODO: Make this AzureDataFactoryHook functionality + AzureDataFactoryCheckPipelineStatusOperator
 @task
 def get_latest_pipeline_run_status(
     conn_id: str,
@@ -65,15 +64,15 @@ def get_latest_pipeline_run_status(
         return pipeline_status
     else:
         pipeline = hook._pipeline_exists(
-            pipeline_name=pipeline_name, resource_group_name="adf-tutorial", factory_name=factory_name,
+            pipeline_name=pipeline_name,
+            resource_group_name="adf-tutorial",
+            factory_name=factory_name,
         )
         if pipeline:
             return "HasNeverRun"
     return "DoesNotExist"
 
 
-# TODO: Create a custom AzureDataFactoryRunPipelineOperator
-# TODO: Update connection form and hook to not use `Extra` field
 @task(multiple_outputs=True)
 def run_adf_pipeline(pipeline_name: str, conn_id: str, factory_name: Optional[str] = None) -> Dict:
     hook = AzureDataFactoryHook(conn_id=conn_id)
