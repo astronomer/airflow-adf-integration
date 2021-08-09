@@ -117,7 +117,7 @@ with DAG(
 ) as dag:
     dag.doc_md = """
     ### Orchestrating Azure Data Factory Pipelines in Airflow
-    This DAG demonstrates orchestrating mulitple [Azure Data Factory][1] (ADF) pipelines using Airflow to
+    This DAG demonstrates orchestrating multiple [Azure Data Factory][1] (ADF) pipelines using Airflow to
     perform classic ELT operators. These ADF pipelines extract daily, currency exchange-rates from an
     [API][2], persist data to a data lake in [Azure Blob Storage][3], perform data-quality checks on staged
     data, and finally load to a daily aggregate table with SCD, Type-2 logic in [Azure SQL Database][4].
