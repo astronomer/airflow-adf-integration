@@ -97,13 +97,7 @@ with DAG(
     begin = DummyOperator(task_id="begin")
     end = DummyOperator(task_id="end")
 
-    with TaskGroup(
-        group_id="extract_data_factory_pipeline",
-        tooltip="""
-        Tasks to execute an Azure Data Factory pipline to extract currency exchange rate data and load into
-        Azure SQL Database.
-        """,
-    ) as extract_data_factory_pipeline:
+    with TaskGroup(group_id="extract_data_factory_pipeline") as extract_data_factory_pipeline:
         get_latest_extract_pipeline_run_status = get_latest_pipeline_run_status(
             conn_id="azure_data_factory",
             pipeline_name="extractDailyExchangeRates",
