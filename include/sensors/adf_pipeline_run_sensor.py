@@ -5,7 +5,23 @@ from airflow.providers.microsoft.azure.hooks.azure_data_factory import AzureData
 from airflow.sensors.base import BaseSensorOperator
 
 
-class AzureDataFactoryPipelineRunSensor(BaseSensorOperator):
+class AzureDataFactoryPipelineRunStatusSensor(BaseSensorOperator):
+    """
+    Checks the status of a pipeline run in Azure Data Factory against expected statuses and known terminal
+    statuses.
+
+    :param conn_id: The Connection ID to use for connecting to Azure Data Factory.
+    :type conn_id: str
+    :param run_id: The pipeline run indentifier.
+    :type run_id: str
+    :param resource_group_name: The resource group name.
+    :type resource_group_name: str
+    :param factory_name: The data factory name.
+    :type factory_name: str
+    :param expected_statuses: The status(es) which are desired for the pipline run.
+    :type expected_statuses: str or List[str]
+    """
+
     template_fields = ("run_id", "resource_group_name", "factory_name")
 
     def __init__(
