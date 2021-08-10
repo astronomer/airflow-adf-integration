@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Union
 
 from include.operators.adf_run_pipeline_operator import AzureDataFactoryRunPipelineOperator
 from include.sensors.adf_pipeline_run_sensor import AzureDataFactoryPipelineRunStatusSensor
