@@ -19,7 +19,7 @@ def get_latest_pipeline_run_status(
     pipeline_name: str,
     factory_name: str,
     resource_group_name: str,
-) -> bool:
+) -> str:
     """
     Retrieves the status of the latest pipeline run for a given pipeline.
 
