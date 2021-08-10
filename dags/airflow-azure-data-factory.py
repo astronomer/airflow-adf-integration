@@ -21,7 +21,18 @@ def get_latest_pipeline_run_status(
     factory_name: str,
     resource_group_name: str,
 ) -> bool:
-    """Retrieves the status of the latest pipeline run for a give pipeline."""
+    """
+    Retrieves the status of the latest pipeline run for a given pipeline.
+
+    :param conn_id: The Connection ID to use for connecting to Azure Data Factory.
+    :type conn_id: str
+    :param pipeline_name: The name of the pipeline to execute.
+    :type pipeline_name: str
+    :param factory_name: The data factory name.
+    :type factory_name: str
+    :param resource_group_name: The resource group name.
+    :type resource_group_name: str
+    """
 
     from azure.mgmt.datafactory.models import (
         RunQueryFilter,
