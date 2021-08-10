@@ -123,7 +123,7 @@ with DAG(
     [API][2], persist data to a data lake in [Azure Blob Storage][3], perform data-quality checks on staged
     data, and finally load to a daily aggregate table with SCD, Type-2 logic in [Azure SQL Database][4].
 
-    Airflow executes each distinct ADF pipelines with operational checks throughout.
+    Airflow executes each distinct ADF pipeline with operational checks throughout.
 
     [1]: https://azure.microsoft.com/en-us/services/data-factory/
     [2]: https://www.exchangerate-api.com/
