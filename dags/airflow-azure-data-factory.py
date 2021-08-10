@@ -103,6 +103,9 @@ with DAG(
     default_args={
         "retries": 1,
         "retry_delay": timedelta(minutes=3),
+        "conn_id": "azure_data_factory",
+        "factory_name": "airflow-adf-integration",
+        "resource_group_name": "adf-tutorial",
     },
     default_view="graph",
 ) as dag:
@@ -141,17 +144,11 @@ with DAG(
 
         run_extract_pipeline = AzureDataFactoryRunPipelineOperator(
             task_id="run_extract_pipeline",
-            conn_id="azure_data_factory",
             pipeline_name="extractDailyExchangeRates",
-            factory_name="airflow-adf-integration",
-            resource_group_name="adf-tutorial",
         )
 
         get_current_extract_pipeline_run_status = AzureDataFactoryPipelineRunStatusSensor(
             task_id="get_current_extract_pipeline_run_status",
-            conn_id="azure_data_factory",
-            factory_name="airflow-adf-integration",
-            resource_group_name="adf-tutorial",
             run_id=run_extract_pipeline.output["run_id"],
             poke_interval=10,
         )
@@ -179,17 +176,11 @@ with DAG(
 
         run_dq_pipeline = AzureDataFactoryRunPipelineOperator(
             task_id="run_dq_pipeline",
-            conn_id="azure_data_factory",
             pipeline_name="loadDailyExchangeRates",
-            factory_name="airflow-adf-integration",
-            resource_group_name="adf-tutorial",
         )
 
         get_current_dq_pipeline_run_status = AzureDataFactoryPipelineRunStatusSensor(
             task_id="get_current_dq_pipeline_run_status",
-            conn_id="azure_data_factory",
-            factory_name="airflow-adf-integration",
-            resource_group_name="adf-tutorial",
             run_id=run_dq_pipeline.output["run_id"],
             poke_interval=10,
         )
