@@ -29,8 +29,8 @@ class AzureDataFactoryPipelineRunStatusSensor(BaseSensorOperator):
         *,
         conn_id: str,
         run_id: str,
-        resource_group_name: Optional[str] = None,
-        factory_name: Optional[str] = None,
+        resource_group_name: str,
+        factory_name: str,
         expected_statuses: Optional[Union[List[str], str]] = "Succeeded",
         **kwargs,
     ) -> None:

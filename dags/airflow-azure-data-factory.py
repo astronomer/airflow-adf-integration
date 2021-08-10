@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Union
 
+from include.operators.adf_run_pipeline_operator import AzureDataFactoryRunPipelineOperator
 from include.sensors.adf_pipeline_run_sensor import AzureDataFactoryPipelineRunStatusSensor
 
 from airflow.decorators import task
@@ -148,7 +149,8 @@ with DAG(
             op_args=[get_latest_extract_pipeline_run_status],
         )
 
-        run_extract_pipeline = run_adf_pipeline(
+        run_extract_pipeline = AzureDataFactoryRunPipelineOperator(
+            task_id="run_extract_pipeline",
             conn_id="azure_data_factory",
             pipeline_name="extractDailyExchangeRates",
             factory_name="airflow-adf-integration",
@@ -160,7 +162,7 @@ with DAG(
             conn_id="azure_data_factory",
             factory_name="airflow-adf-integration",
             resource_group_name="adf-tutorial",
-            run_id=run_extract_pipeline["run_id"],
+            run_id=run_extract_pipeline.output["run_id"],
             poke_interval=10,
         )
 
@@ -185,7 +187,8 @@ with DAG(
             op_args=[get_latest_dq_pipeline_run_status],
         )
 
-        run_dq_pipeline = run_adf_pipeline(
+        run_dq_pipeline = AzureDataFactoryRunPipelineOperator(
+            task_id="run_dq_pipeline",
             conn_id="azure_data_factory",
             pipeline_name="loadDailyExchangeRates",
             factory_name="airflow-adf-integration",
@@ -197,7 +200,7 @@ with DAG(
             conn_id="azure_data_factory",
             factory_name="airflow-adf-integration",
             resource_group_name="adf-tutorial",
-            run_id=run_dq_pipeline["run_id"],
+            run_id=run_dq_pipeline.output["run_id"],
             poke_interval=10,
         )
 
