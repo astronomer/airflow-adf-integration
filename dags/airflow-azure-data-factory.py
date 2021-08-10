@@ -85,26 +85,6 @@ def get_latest_pipeline_run_status(
     return "DoesNotExist"
 
 
-@task(multiple_outputs=True)
-def run_adf_pipeline(
-    conn_id: str,
-    pipeline_name: str,
-    factory_name: str,
-    resource_group_name: str
-) -> Dict:
-    """
-    Executes an Azure Data Factory pipeline and return ``additional_properties`` and ``run_id`` as separate
-    `XCom` keys.
-    """
-
-    hook = AzureDataFactoryHook(conn_id=conn_id)
-    output = hook.run_pipeline(
-        pipeline_name=pipeline_name, resource_group_name=resource_group_name, factory_name=factory_name
-    )
-
-    return vars(output)
-
-
 with DAG(
     dag_id="airflow-adf-integration-demo",
     start_date=datetime(2021, 7, 21),
