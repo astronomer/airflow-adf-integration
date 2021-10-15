@@ -1,1 +1,1 @@
-apache-airflow-providers-microsoft-azure==3.0.0
+apache-airflow-providers-microsoft-azure==3.2.0

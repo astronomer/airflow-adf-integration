@@ -1,14 +1,14 @@
 import logging
 from datetime import datetime, timedelta
 
-from include.operators.adf_run_pipeline_operator import AzureDataFactoryRunPipelineOperator
-from include.sensors.adf_pipeline_run_sensor import AzureDataFactoryPipelineRunStatusSensor
-
 from airflow.decorators import task
 from airflow.models import DAG
+from airflow.models.baseoperator import chain
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import ShortCircuitOperator
 from airflow.providers.microsoft.azure.hooks.azure_data_factory import AzureDataFactoryHook
+from airflow.providers.microsoft.azure.operators.data_factory import AzureDataFactoryRunPipelineOperator
+from airflow.providers.microsoft.azure.sensors.data_factory import AzureDataFactoryPipelineRunStatusSensor
 from airflow.utils.dates import days_ago
 from airflow.utils.task_group import TaskGroup
 
@@ -61,7 +61,7 @@ def get_latest_pipeline_run_status(
 
     # Retrieve runs for the given pipeline within a given factory.
     logging.info(f"Checking for the latest status for the {pipeline_name} pipeline.")
-    hook = AzureDataFactoryHook(conn_id=conn_id)
+    hook = AzureDataFactoryHook(azure_data_factory_conn_id=conn_id)
     query_response = hook.get_conn().pipeline_runs.query_by_factory(
         resource_group_name=resource_group_name, factory_name=factory_name, filter_parameters=filter_params
     )
@@ -103,7 +103,7 @@ with DAG(
     default_args={
         "retries": 1,
         "retry_delay": timedelta(minutes=3),
-        "conn_id": "azure_data_factory",
+        "azure_data_factory_conn_id": "azure_data_factory",
         "factory_name": "airflow-adf-integration",
         "resource_group_name": "adf-tutorial",
     },
@@ -145,10 +145,11 @@ with DAG(
         run_extract_pipeline = AzureDataFactoryRunPipelineOperator(
             task_id="run_extract_pipeline",
             pipeline_name="extractDailyExchangeRates",
+            wait_for_termination=False,
         )
 
-        get_current_extract_pipeline_run_status = AzureDataFactoryPipelineRunStatusSensor(
-            task_id="get_current_extract_pipeline_run_status",
+        wait_for_extract_pipeline_run = AzureDataFactoryPipelineRunStatusSensor(
+            task_id="wait_for_extract_pipeline_run",
             run_id=run_extract_pipeline.output["run_id"],
             poke_interval=10,
         )
@@ -157,7 +158,7 @@ with DAG(
 
         # Task dependencies created via `XComArgs`:
         #   get_latest_extract_pipeline_run_status >> is_extract_pipeline_running
-        #   run_extract_pipeline >> get_current_extract_pipeline_run_status
+        #   run_extract_pipeline >> wait_for_extract_pipeline_run
 
     # Begin tasks for "data quality and load" activities.
     with TaskGroup(group_id="data_quality_factory_pipeline") as data_quality_factory_pipeline:
@@ -177,10 +178,11 @@ with DAG(
         run_dq_pipeline = AzureDataFactoryRunPipelineOperator(
             task_id="run_dq_pipeline",
             pipeline_name="loadDailyExchangeRates",
+            wait_for_termination=False,
         )
 
-        get_current_dq_pipeline_run_status = AzureDataFactoryPipelineRunStatusSensor(
-            task_id="get_current_dq_pipeline_run_status",
+        wait_for_dq_pipeline_run = AzureDataFactoryPipelineRunStatusSensor(
+            task_id="wait_for_dq_pipeline_run",
             run_id=run_dq_pipeline.output["run_id"],
             poke_interval=10,
         )
@@ -189,7 +191,7 @@ with DAG(
 
         # Task dependencies created via `XComArgs`:
         #   get_latest_dq_pipeline_run_status >> is_dq_pipeline_running
-        #   run_dq_pipeline >> get_current_dq_pipeline_run_status
+        #   run_dq_pipeline >> wait_for_dq_pipeline_run
 
     # Create overall task dependencies for the DAG.
-    begin >> extract_data_factory_pipeline >> data_quality_factory_pipeline >> end
+    chain(begin, extract_data_factory_pipeline, data_quality_factory_pipeline, end)

@@ -10,23 +10,17 @@ The `loadDailyExchangeRates` ADF pipeline performs a data quality check against 
 ![image](https://user-images.githubusercontent.com/48934154/128788546-978f724b-3782-4a02-9eaa-bdc99f9fa9db.png)
 
 
-
-
-
-> **Note:** A custom operator [`AzureDataFactoryRunPipelineOperator`](https://github.com/astronomer/airflow-adf-integration/blob/main/include/operators/adf_run_pipeline_operator.py) and sensor [`AzureDataFactoryPipelineRunStatusSensor`](https://github.com/astronomer/airflow-adf-integration/blob/main/include/sensors/adf_pipeline_run_sensor.py) were created for this DAG to execute an ADF pipeline and check the status of the pipeline run as an operational checkpoint -- both soon to be a part of the Microsoft Azure provider in Airflow.
-
-</br>
-</br>
-
 **Airflow Version**
 
-   `2.1.0`
+   `2.2.0`
 
 **Providers**
 
   ```
-  apache-airflow-providers-microsoft-azure==3.0.0
+  apache-airflow-providers-microsoft-azure==3.2.0
   ```
 
 **Connections Required**
   - Azure Data Factory
+
+For more information on how to connect to Azure Data Factory from Airflow, [see this guide](https://airflow.apache.org/docs/apache-airflow-providers-microsoft-azure/stable/connections/adf.html).
