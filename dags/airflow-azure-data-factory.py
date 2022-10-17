@@ -1,3 +1,9 @@
+"""
+Use Airflow to call pipelines that exist in ADF.
+
+Also showcases how to call the hook in a Python function as well as use one of the operators.
+"""
+
 import logging
 from datetime import datetime, timedelta
 
@@ -98,6 +104,7 @@ def get_latest_pipeline_run_status(
 with DAG(
     dag_id="airflow-adf-integration-demo",
     start_date=datetime(2021, 7, 21),
+    doc_md=__doc__,
     schedule_interval="@daily",
     catchup=False,
     default_args={
