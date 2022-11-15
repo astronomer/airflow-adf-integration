@@ -1,3 +1,24 @@
+"""
+### Call Azure Data Factory Pipelines with Airflow
+
+Trigger pre-existing Azure Data Factory pipelines with Airflow. 
+
+This DAG demonstrates orchestrating multiple [Azure Data Factory][1] (ADF) pipelines using Airflow to
+perform classic ELT operators. These ADF pipelines extract daily, currency exchange-rates from an
+[API][2], persist data to a data lake in [Azure Blob Storage][3], perform data-quality checks on staged
+data, and finally load to a daily aggregate table with SCD, Type-2 logic in [Azure SQL Database][4].
+
+Airflow executes each distinct ADF pipeline with operational checks throughout.
+
+    [1]: https://azure.microsoft.com/en-us/services/data-factory/
+    [2]: https://www.exchangerate-api.com/
+    [3]: https://azure.microsoft.com/en-us/services/storage/blobs/
+    [4]: https://azure.microsoft.com/en-us/products/azure-sql/database/
+
+This DAG also showcases how to call the hook in a Python function as well as use one of the operators.
+"""
+
+
 import logging
 from datetime import datetime, timedelta
 
@@ -98,6 +119,7 @@ def get_latest_pipeline_run_status(
 with DAG(
     dag_id="airflow-adf-integration-demo",
     start_date=datetime(2021, 7, 21),
+    doc_md=__doc__,
     schedule_interval="@daily",
     catchup=False,
     default_args={
@@ -109,20 +131,6 @@ with DAG(
     },
     default_view="graph",
 ) as dag:
-    dag.doc_md = """
-    ### Orchestrating Azure Data Factory Pipelines in Airflow
-    This DAG demonstrates orchestrating multiple [Azure Data Factory][1] (ADF) pipelines using Airflow to
-    perform classic ELT operators. These ADF pipelines extract daily, currency exchange-rates from an
-    [API][2], persist data to a data lake in [Azure Blob Storage][3], perform data-quality checks on staged
-    data, and finally load to a daily aggregate table with SCD, Type-2 logic in [Azure SQL Database][4].
-
-    Airflow executes each distinct ADF pipeline with operational checks throughout.
-
-    [1]: https://azure.microsoft.com/en-us/services/data-factory/
-    [2]: https://www.exchangerate-api.com/
-    [3]: https://azure.microsoft.com/en-us/services/storage/blobs/
-    [4]: https://azure.microsoft.com/en-us/products/azure-sql/database/
-    """
 
     begin = DummyOperator(task_id="begin")
     end = DummyOperator(task_id="end")
